@@ -34,12 +34,13 @@ end
 end
 ezscript.notify("Ez-Script", "this script was made with Ez-Script") -- leave in if cool :D
 
-function ezscript.loop(f, name)
+function ezscript.loop(f, name, delay)
     if not f then return end
     if not type(f) == "function" then return end
     if not name then 
     spawn(function()
-    while wait() do 
+    local delay = delay or 0
+    while wait(delay) do 
     f()
     end
     end)
