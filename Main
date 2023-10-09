@@ -219,7 +219,64 @@ if not type(f) == "function" then return end
 pcall(f)
 end
 
+function ezscript.getcharacter()
+if ezscript.hascharacter() then 
+return game.Players.LocalPlayer.Character
+end
+end
+
+function ezscript.getprimarypart()
+if ezscript.hascharacter() then 
+return ezscript.getcharacter().PrimaryPart
+end
+end
+
+function ezscript.gethumanoid()
+if ezscript.getcharacter() then
+    return ezscript.getcharacter().Humanoid
+end
+end
+
+function sethumanoidproperty(property, value)
+    local hum = ezscript.gethumanoid()
+    if hum and hum[property] then 
+        hum[property] = value
+    end
+end
+
+function ezscript.setwalkspeed(amount)
+    if ezscript.hascharacter() then 
+        local character = ezscript.getcharacter()
+        local hum = character:FindFirstChildOfClass("Humanoid")
+        hum.WalkSpeed = amount or 32
+    end
+end
+
+function ezscript.setjumppower(amount)
+    if ezscript.hascharacter() then 
+        local character = ezscript.getcharacter()
+        local hum = character:FindFirstChildOfClass("Humanoid")
+        hum.JumpPower = amount or 32
+    end
+end
+
+function ezscript.teleporttoposition(pos)
+    if ezscript.getprimarypart() then 
+        ezscript.getprimarypart().Position = pos
+    end
+end
+
+function ezscript.teleporttopart(part)
+    if part and part:IsA("Part") then 
+        if ezscript.getprimarypart() then 
+            ezscript.getprimarypart().Position = part.Position
+        end
+    end
+end
+
+
 function ezscript.help()
+    ezscript.notify("Help", "Check f9 Console", 5)
     print([[
         Ezscript was made by wowzers cuz he was bored github.com/idontknowwhattonamemyself
         Dm me on discord for help (wowzers_temp_91657)
