@@ -1,0 +1,269 @@
+local StarterGui = game:GetService("StarterGui")
+local Workspace = game:GetService("Workspace")
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
+local ezscript = {}
+local loops = {}
+local hbs = {}
+
+ezscript.StarterGui = StarterGui
+ezscript.Workspace = Workspace
+ezscript.HttpService = HttpService
+ezscript.RunService = RunService
+
+function ezscript.notify(title, content, duration, imageid)
+    local title = title or "Title Argument Required (ez-script)"
+    local content = content or  "Content Argument Required (ez-script)"
+    local duration = duration or 3
+    if not title or not content then return false end
+    if imageid then
+    game:GetService("StarterGui"):SetCore("SendNotification",{
+        Title = title, -- Required
+        Text = content, -- Required
+        Icon = imageid,
+        Duration = duration
+    })
+else
+    game:GetService("StarterGui"):SetCore("SendNotification",{
+        Title = title, -- Required
+        Text = content, -- Required
+        Duration = duration
+    })
+end
+    return true 
+end
+ezscript.notify("Ez-Script", "this script was made with Ez-Script") -- leave in if cool :D
+
+function ezscript.loop(f, name)
+    if not f then return end
+    if not type(f) == "function" then return end
+    if not name then 
+    spawn(function()
+    while wait() do 
+    f()
+    end
+    end)
+else
+    table.insert(loops, name)
+    spawn(function()
+    while table.find(loops, name) do 
+    wait()
+    f()
+    end
+    end)
+end
+end
+function ezscript.breakloop(name)
+    if table.find(loops, name) then 
+    table.remove(loops, name)
+    end
+end
+function ezscript.renderstep(f, name, priority)
+    if not f then return end
+    local priority = priority or 0
+    if not name then return end
+    if not type(f) == "function" then return end
+    RunService:BindToRenderStep(name, priority, f)
+end
+
+function ezscript.unrenderstep(name)
+    RunService:UnbindFromRenderStep(name)
+end
+
+
+
+function ezscript.heartbeat(f, name)
+    if not f then return end
+    if not type(f) == "function" then return end
+local stop = false
+if name then 
+RunService.Heartbeat:Connect(function(a)
+    if stop == false then 
+    if table.find(hbs, name) then 
+    stop = true
+    else 
+    f(a)
+    end
+    end
+end)
+else
+    RunService.Heartbeat:Connect(f)
+end
+end 
+
+function ezscript.unheartbeat(name)
+if name then 
+spawn(function()
+while wait() do 
+if table.find(hbs, name ) then 
+    table.remove(hbs, name)
+else 
+    break
+end
+end
+end)
+end
+end
+local disabledremotes = {}
+
+function ezscript.stopremote(rem)
+    if string.lower(type(rem)) == "string" then
+        table.insert(disabledremotes, rem)
+        elseif string.lower(type(rem)) == "instance" then
+        table.insert(disabledremotes, rem.Name)
+        end
+        end
+end
+
+function ezscript.resumeremote(rem)
+    if string.lower(type(rem)) == "string" then
+        spawn(function()
+        while table.find(disabledremotes, rem) ~= nil do
+        wait() 
+        table.remove(disabledremotes, rem)
+        end
+        end)
+        elseif string.lower(type(rem)) == "instance" then
+            spawn(function()
+                while table.find(disabledremotes, rem.Name) ~= nil do
+                wait() 
+                table.remove(disabledremotes, rem.Name)
+                end
+            end)
+        end
+end
+
+local old
+old = hookmetamethod(game,'__namecall', newcclosure(function(self,...)
+    local method = getnamecallmethod();
+    local args = {...}
+    if method == "FireServer" and table.find(disabledremotes, tostring(self)) then 
+        print("Remote Tried to fire ("..tostring(self)..")")
+        return nil
+    end
+return old(self, ...)
+end));
+
+function ezscript.hascharacter(player)
+local player = player or game.Players.LocalPlayer
+    local ischaracter = player.Character and player.Character:FindFirstChild("Humanoid") and plr.Character:FindFirstChild("HumanoidRootPart") and true or false
+return ischaracter
+end
+
+function ezscript.gethealth(player)
+local plr = player or game.Players.LocalPlayer
+local char = plr.Character
+if char then 
+    local hum = char:FindFirstChild("Humanoid")
+    if not hum then return 0 end
+    return hum.Health
+else
+    return 0
+end
+return 0
+end
+
+function ezscript.getdistancefromlocalplayer(character)
+if character:IsA("BasePart") then 
+local charloaded = ezscript.hascharacter()
+if charloaded then 
+local mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - character.Position).Magnitude
+return mag
+end
+end
+if character.ClassName == "Player" then
+if ezscript.hascharacter(character) == true then 
+    local char = character.Character
+    if ezscript.hascharacter() == true then 
+        local plr = game.Players.LocalPlayer
+        if plr.Character:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("HumanoidRootPart") then 
+        local mag = (plr.Character.HumanoidRootPart.Position - character.Character:FindFirstChild("HumanoidRootPart").Position).Magnitude
+        return mag
+        else 
+            return nil
+        end
+    else return nil
+    end
+else
+    return nil 
+end
+elseif character:IsA("Model") and character.PrimaryPart ~= nil then
+    if ezscript.hascharacter() == true then 
+        local plr = game.Players.LocalPlayer
+        if plr.Character:FindFirstChild("HumanoidRootPart") then 
+            local mag = (plr.Character.HumanoidRootPart.Position - character.PrimaryPart.Position).Magnitude
+        end
+else return nil
+end
+elseif character:IsA("Model") and character.PrimaryPart == nil then 
+local part = character:FindFirstChildOfClass("Part")
+if not part then return end
+if ezscript.hascharacter() == true and plr.Character:FindFirstChild("HumanoidRootPart") then 
+    local mag = (plr.Character.HumanoidRootPart.Position - part.Position).Magnitude
+else return nil
+end
+end
+end
+
+function ezscript.getplayercount()
+return #game.Players:GetPlayers()
+end
+
+function ezscript.getrandomplayer()
+return game.Players:GetPlayers()[math.random(1,#ezscript.getplayercount)] or game.Players.LocalPlayer
+end
+
+function ezscript.securecall(f)
+if not type(f) == "function" then return end
+pcall(f)
+end
+
+function ezscript.help()
+    print([[
+        Ezscript was made by wowzers cuz he was bored github.com/idontknowwhattonamemyself
+        Dm me on discord for help (wowzers_temp_91657)
+        thanks for using ez-script
+    ]])
+end
+
+function ezscript.lockproperty(obj, prop, v)
+    if obj and prop then else return end 
+    local v = v or obj[prop]
+    
+    obj:GetPropertyChangedSignal(prop):Connect(function()
+    obj[prop] = v
+    end)
+end
+
+if not isfolder("SavedValues") then 
+makefolder("SavedValues")
+end
+
+function ezscript.savevalue(name, value)
+    writefile("SavedValues/"..name, value)
+end
+
+function ezscript.loadvalue(name)
+    if isfile("SavedValues/"..name) then 
+        return readfile("SavedValues/"..name)
+    end
+    return nil
+end
+
+return ezscript
+
+-- ezscript.loop(
+-- function()
+-- print("hi")
+-- end, "my test loop")
+-- wait(1)
+-- ezscript.breakloop("my test loop")
+-- ezscript.notify("hi", "this notification was made by ez-script")
+-- local characterloaded = ezscript.hascharacter() == true and "" or "not"
+-- local players = game.Players:GetPlayers()
+-- local playercount = ezscript.getplayercount()
+-- local randomplayer = ezscript.getrandomplayer()
+-- print("randomly selected player: "..randomplayer)
+-- print("playercount: "..playercount)
+-- print(" "..randomplayer.Name.." Is "tostring(ezscript.getdistancefromlocalplayer(randomplayer)).." studs away from you" or "meow")
+-- print("Your character is"..characterloaded.." loaded in") -- has hrp check!
