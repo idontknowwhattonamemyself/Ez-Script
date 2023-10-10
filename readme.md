@@ -2,6 +2,7 @@
 ## Starting out
 First we need to initialize the library
 ```lua
+getgenv().watermark = true -- leave on if cool otherwise set to false
 local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/idontknowwhattonamemyself/Ez-Script/Lua/Main"))
 ```
 Congratulations, you just got one step closer to being a pro.
