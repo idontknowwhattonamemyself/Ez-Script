@@ -58,4 +58,28 @@ hum, -- Object
 )
 end
 ```
-### Thanks For Reading
+Now, Lets Try saving some data
+```lua
+ezscript.savevalue(
+    "Super Important Data", -- name of data (to access later)
+    "Top Secret!" -- Data To Save
+)
+```
+Now, lets read the data we just stored
+```lua
+local data = ezscript.loadvalue(
+    "Super Important Data" -- name of previously stored data
+)
+print(data)
+```
+Lets see how long it takes to print "hi" (in seconds) using stopwatches
+```lua
+ezscript.stopwatch(
+    "hi"
+)
+print("hi")
+print(ezscript.getstopwatch("hi")) --unrounded
+print(math.round(ezscript.getstopwatch("hi"))) -- rounded
+ezscript.stopstopwatch("hi")
+```
+### Thanks For Reading and Have Fun
