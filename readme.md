@@ -82,4 +82,4 @@ print(ezscript.getstopwatch("hi")) --unrounded
 print(math.round(ezscript.getstopwatch("hi"))) -- rounded
 ezscript.stopstopwatch("hi")
 ```
-### Thanks For Reading and Have Fun
+### Thanks For Reading, Check Out Main.lua for more.
