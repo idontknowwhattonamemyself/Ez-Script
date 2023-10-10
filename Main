@@ -237,6 +237,7 @@ if ezscript.getcharacter() then
 end
 end
 
+
 function sethumanoidproperty(property, value)
     local hum = ezscript.gethumanoid()
     if hum and hum[property] then 
@@ -284,12 +285,14 @@ function ezscript.help()
     ]])
 end
 
+
 function ezscript.lockproperty(obj, prop, v)
     if obj and prop then else return end 
     local v = v or obj[prop]
-    
     obj:GetPropertyChangedSignal(prop):Connect(function()
+      
     obj[prop] = v
+
     end)
 end
 
@@ -306,6 +309,41 @@ function ezscript.loadvalue(name)
         return readfile("SavedValues/"..name)
     end
     return nil
+end
+
+local stopwatches = {}
+
+function ezscript.stopwatch(name)
+table.insert(stopwatches, {
+    ["Name"] = name, 
+    ["Time"] = tick()
+})
+end
+
+function ezscript.getstopwatch(name)
+local found = nil
+for i, v in pairs(stopwatches) do 
+if v.Name == name then 
+found = tick() - v.Time
+end
+end
+return found
+end
+
+function ezscript.stopstopwatch(name)
+for i, v in pairs(stopwatches) do 
+if v.Name == name then 
+table.remove(stopwatches, i)
+end
+end
+end
+
+function ezscript.clearstopwatches()
+stopwatches = {}
+end
+
+function ezscript.stringadd(string, toadd)
+return string..toadd
 end
 
 return ezscript
